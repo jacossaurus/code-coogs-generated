@@ -37,6 +37,8 @@ jobs:
             git commit -m "Update generated files"
             git push https://jacossaurus:${{ secrets.github_token }}@github.com/code-coogs-generated.git HEAD: main
           fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_TOKEN }}
 
       - name: Send Build Failure Notification
         uses: rjstone/discord-webhook-notify@v1
