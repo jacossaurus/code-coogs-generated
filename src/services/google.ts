@@ -30,13 +30,19 @@ class GoogleService {
 		console.log("Attempting to authenticate");
 
 		try {
-			const credentials =
-				process.env.GOOGLE_CLIENT_CREDENTIALS ??
-				(JSON.parse(
+			let credentials: Credentials | undefined;
+
+			const stored = process.env.GOOGLE_CLIENT_CREDENTIALS;
+
+			if (stored && stored !== "") {
+				credentials = JSON.parse(stored) as Credentials;
+			} else {
+				credentials = JSON.parse(
 					fs
 						.readFileSync(path.join(process.cwd(), "credentials.json"))
 						.toString(),
-				) as Credentials);
+				) as Credentials;
+			}
 
 			if (credentials.access_token !== undefined) {
 				this.loadCredentials(credentials);
