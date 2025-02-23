@@ -36,6 +36,12 @@ jobs:
 
       - name: Generate Files
         run: pnpm build
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.google_client_id }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.google_client_secret }}
+          GOOGLE_CLIENT_CREDENTIALS: ${{ secrets.google_client_credentials }}
+          SPREADSHEET_ID: ${{ secrets.spreadsheet_id }}
+          RESOURCES_FOLDER_ID: ${{ secrets.resources_folder_id }}
 
       - name: Push Generated Files
         run: |

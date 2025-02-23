@@ -15,13 +15,13 @@ class GoogleService {
 
 	public isAuthenticated = false;
 
-	constructor(id: string, secret: string, redirectUri: string) {
+	constructor(id: string, secret: string) {
 		console.log("Creating OAuth2 Client");
 
 		this.client = new OAuth2Client({
 			clientId: id,
 			clientSecret: secret,
-			redirectUri: redirectUri,
+			redirectUri: "http://localhost:3000/oauth-callback",
 		});
 	}
 
@@ -30,11 +30,13 @@ class GoogleService {
 		console.log("Attempting to authenticate");
 
 		try {
-			const credentials = JSON.parse(
-				fs
-					.readFileSync(path.join(process.cwd(), "credentials.json"))
-					.toString(),
-			) as Credentials;
+			const credentials =
+				process.env.GOOGLE_CLIENT_CREDENTIALS ??
+				(JSON.parse(
+					fs
+						.readFileSync(path.join(process.cwd(), "credentials.json"))
+						.toString(),
+				) as Credentials);
 
 			if (credentials.access_token !== undefined) {
 				this.loadCredentials(credentials);
@@ -71,7 +73,7 @@ class GoogleService {
 
 		const { tokens } = await this.client.getToken(code);
 
-		fs.writeFileSync("credentials.json", JSON.stringify(tokens));
+		// fs.writeFileSync("credentials.json", JSON.stringify(tokens));
 
 		this.loadCredentials(tokens);
 	}

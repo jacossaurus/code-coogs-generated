@@ -1,4 +1,3 @@
-import ts from "typescript";
 import path from "node:path";
 import dotenv from "dotenv";
 import GoogleService from "./services/google";
@@ -8,13 +7,9 @@ import generateOfficers from "./generator/officers/generateOfficers";
 dotenv.config();
 
 async function main() {
-	const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URI } = process.env;
+	const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 
-	const google = new GoogleService(
-		GOOGLE_CLIENT_ID,
-		GOOGLE_CLIENT_SECRET,
-		REDIRECT_URI,
-	);
+	const google = new GoogleService(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
 
 	await google.authenticate(process.env.GOOGLE_CLIENT_CODE);
 
