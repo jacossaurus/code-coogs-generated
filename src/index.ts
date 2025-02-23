@@ -7,6 +7,10 @@ import generateOfficers from "./generator/officers/generateOfficers";
 dotenv.config();
 
 async function main() {
+	for (const [i, v] of Object.entries(process.env)) {
+		console.log(i);
+	}
+
 	const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 
 	const google = new GoogleService(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
