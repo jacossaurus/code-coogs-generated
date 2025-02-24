@@ -1,4 +1,4 @@
-export interface CategoryFile {
+export interface ResourceFile {
 	extension: string;
 	category: string;
 	name: string;

@@ -1,7 +1,11 @@
 import path from "node:path";
 import dotenv from "dotenv";
 import GoogleService from "./services/google";
+import getResources from "./generator/resources/getResources";
+import getOfficers from "./generator/officers/getOfficers";
 import generateResources from "./generator/resources/generateResources";
+import ts from "typescript";
+import { writeFileSync } from "node:fs";
 import generateOfficers from "./generator/officers/generateOfficers";
 
 dotenv.config();
@@ -25,14 +29,26 @@ async function main() {
 
 	console.log("Success! Running generators...");
 
-	const generatedDir = path.join(process.cwd(), "include", "generated");
-
-	const generated = {
-		resources: await generateResources(generatedDir, apis),
-		officers: await generateOfficers(generatedDir, apis),
+	const data = {
+		resources: await getResources(apis),
+		officers: await getOfficers(apis),
 	};
 
-	console.log("Done!");
+	const generatedDir = path.join(process.cwd(), "include", "generated");
+	const generatedFiles = {
+		resources: await generateResources(data.resources),
+		officers: await generateOfficers(data.officers),
+	};
+
+	const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+
+	const contents = {
+		resources: printer.printFile(generatedFiles.resources),
+		officers: printer.printFile(generatedFiles.officers),
+	};
+
+	writeFileSync(path.join(generatedDir, "resources.ts"), contents.resources);
+	writeFileSync(path.join(generatedDir, "officers.ts"), contents.officers);
 }
 
 main();

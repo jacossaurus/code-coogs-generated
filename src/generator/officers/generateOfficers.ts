@@ -1,52 +1,120 @@
-import path from "node:path";
-import { writeFileSync } from "node:fs";
-import type { GoogleServiceAPIs } from "../../services/google";
+import ts from "typescript";
+import { createCommentStatement } from "../../utils/createCommentStatement";
 import type { Officer } from "../../types/officers";
 
-async function generateOfficers(outputDir: string, api: GoogleServiceAPIs) {
-	const sheets = api.sheets;
+async function generateOfficers(officers: Array<Officer>) {
+	console.log("Generating officers type file...");
 
-	const data = await sheets.spreadsheets.values.batchGetByDataFilter({
-		spreadsheetId: process.env.SPREADSHEET_ID,
-		requestBody: {
-			dataFilters: [
-				{
-					gridRange: {
-						startRowIndex: 0,
-						endRowIndex: 100,
-						startColumnIndex: 0,
-						endColumnIndex: 10,
-					},
-				},
+	const statements = new Array<ts.Statement>();
+
+	statements.push(
+		createCommentStatement(
+			" THIS FILE WAS GENERATED AUTOMATICALLY AND SHOULD NOT BE EDITED BY HAND!",
+		),
+	);
+
+	statements.push(
+		ts.factory.createInterfaceDeclaration(
+			undefined,
+			ts.factory.createIdentifier("Officer"),
+			undefined,
+			undefined,
+			[
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("title"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("name"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("linkedIn"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("year"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("semester"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("imageUrl"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
 			],
-		},
-	});
+		),
+	);
 
-	const node = (data.data.valueRanges ?? [])[0];
-	const range = (node.valueRange?.values ?? []) as Array<Array<string>>;
+	statements.push(
+		ts.factory.createVariableStatement(
+			undefined,
+			ts.factory.createVariableDeclarationList(
+				[
+					ts.factory.createVariableDeclaration(
+						ts.factory.createIdentifier("officers"),
+						undefined,
+						ts.factory.createArrayTypeNode(
+							ts.factory.createTypeReferenceNode("Officer"),
+						),
+						ts.factory.createArrayLiteralExpression([
+							...officers.map((officer) => {
+								return ts.factory.createObjectLiteralExpression(
+									[
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("title"),
+											ts.factory.createStringLiteral(officer.title),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("name"),
+											ts.factory.createStringLiteral(officer.name),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("linkedIn"),
+											ts.factory.createStringLiteral(officer.linkedIn),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("year"),
+											ts.factory.createStringLiteral(officer.year),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("semester"),
+											ts.factory.createStringLiteral(officer.semester),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("imageUrl"),
+											ts.factory.createStringLiteral(officer.imageUrl),
+										),
+									],
+									true,
+								);
+							}),
+						]),
+					),
+				],
+				ts.NodeFlags.Const,
+			),
+		),
+	);
 
-	const titles = range[0];
-
-	const officers = new Array<Officer>();
-
-	for (const officer of range) {
-		if (officer === titles || officer[0] === "") {
-			continue;
-		}
-
-		officers.push({
-			title: officer[0],
-			name: officer[1],
-			linkedIn: officer[2],
-			year: officer[3],
-			semester: officer[4],
-			imageUrl: officer[5],
-		});
-	}
-
-	writeFileSync(
-		path.join(outputDir, "officers.json"),
-		JSON.stringify(officers),
+	return ts.factory.createSourceFile(
+		statements,
+		ts.factory.createToken(ts.SyntaxKind.EndOfFileToken),
+		ts.NodeFlags.None,
 	);
 }
 

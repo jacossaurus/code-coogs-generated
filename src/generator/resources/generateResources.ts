@@ -1,84 +1,110 @@
-import path from "node:path";
-import { writeFileSync } from "node:fs";
-import type { GoogleServiceAPIs } from "../../services/google";
-import type { CategoryFile } from "../../types/resources";
+import ts from "typescript";
+import type { ResourceFile } from "../../types/resources";
+import { createCommentStatement } from "../../utils/createCommentStatement";
 
-const ALLOWED_EXTENSION_TYPES = ["pdf", "ipynb"];
+async function generateResources(resources: Array<ResourceFile>) {
+	console.log("Generating resources type file...");
 
-// TODO: handle pagination.
+	const statements = new Array<ts.Statement>();
 
-async function generateResources(outputDir: string, api: GoogleServiceAPIs) {
-	const drive = api.drive;
+	statements.push(
+		createCommentStatement(
+			" THIS FILE WAS GENERATED AUTOMATICALLY AND SHOULD NOT BE EDITED BY HAND!",
+		),
+	);
 
-	const categories: { [category: string]: Array<CategoryFile> } = {};
+	statements.push(
+		ts.factory.createInterfaceDeclaration(
+			undefined,
+			ts.factory.createIdentifier("Resource"),
+			undefined,
+			undefined,
+			[
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("extension"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("category"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("name"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("link"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
+					ts.factory.createIdentifier("id"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+			],
+		),
+	);
 
-	await drive.files
-		.list({
-			// Query all files within resources folder
-			q: `'${process.env.RESOURCES_FOLDER_ID}' in parents and mimeType = 'application/vnd.google-apps.folder'`,
+	statements.push(
+		ts.factory.createVariableStatement(
+			undefined,
+			ts.factory.createVariableDeclarationList(
+				[
+					ts.factory.createVariableDeclaration(
+						ts.factory.createIdentifier("resources"),
+						undefined,
+						ts.factory.createArrayTypeNode(
+							ts.factory.createTypeReferenceNode("Resource"),
+						),
+						ts.factory.createArrayLiteralExpression([
+							...resources.map((resource) => {
+								return ts.factory.createObjectLiteralExpression(
+									[
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("id"),
+											ts.factory.createStringLiteral(resource.id),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("link"),
+											ts.factory.createStringLiteral(resource.link),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("name"),
+											ts.factory.createStringLiteral(resource.name),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("category"),
+											ts.factory.createStringLiteral(resource.category),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("extension"),
+											ts.factory.createStringLiteral(resource.extension),
+										),
+									],
+									true,
+								);
+							}),
+						]),
+					),
+				],
+				ts.NodeFlags.Const,
+			),
+		),
+	);
 
-			// Get ids, names, and links to files
-			fields: "files(id, name)",
-		})
-		.then(async (foldersResponse) => {
-			const folders = foldersResponse.data.files;
-
-			if (folders === undefined) {
-				console.log("The folders list was empty...");
-				return;
-			}
-
-			console.log(`Found ${folders.length} folders`);
-
-			for (const folder of folders) {
-				if (!folder.name || !folder.id) {
-					continue;
-				}
-
-				const category = folder.name;
-
-				categories[category] = [];
-
-				await drive.files
-					.list({
-						q: `'${folder.id}' in parents`,
-						fields: "files(id, name, webViewLink, fileExtension)",
-					})
-					.then((filesResponse) => {
-						const files = filesResponse.data.files;
-
-						if (files === undefined) {
-							console.log(
-								"The files list was empty for category (${category})",
-							);
-							return;
-						}
-
-						for (const file of files) {
-							if (
-								!file.id ||
-								!file.name ||
-								!file.webViewLink ||
-								!file.fileExtension
-							) {
-								continue;
-							}
-
-							categories[category].push({
-								extension: file.fileExtension,
-								category: category,
-								name: file.name,
-								link: file.webViewLink,
-								id: file.id,
-							});
-						}
-					});
-			}
-		});
-
-	writeFileSync(
-		path.join(outputDir, "resources.json"),
-		JSON.stringify(categories),
+	return ts.factory.createSourceFile(
+		statements,
+		ts.factory.createToken(ts.SyntaxKind.EndOfFileToken),
+		ts.NodeFlags.None,
 	);
 }
 
