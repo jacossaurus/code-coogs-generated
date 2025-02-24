@@ -65,7 +65,6 @@ class GoogleService {
 			scope: [
 				"https://www.googleapis.com/auth/spreadsheets",
 				"https://www.googleapis.com/auth/drive",
-				"https://mail.google.com/",
 			],
 		});
 
@@ -79,7 +78,7 @@ class GoogleService {
 
 		const { tokens } = await this.client.getToken(code);
 
-		// fs.writeFileSync("credentials.json", JSON.stringify(tokens));
+		fs.writeFileSync("credentials.json", JSON.stringify(tokens));
 
 		this.loadCredentials(tokens);
 	}
