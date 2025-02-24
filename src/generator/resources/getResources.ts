@@ -3,8 +3,6 @@ import type { ResourceFile } from "../../types/resources";
 
 const ALLOWED_EXTENSION_TYPES = ["pdf", "ipynb"];
 
-// TODO: handle pagination.
-
 async function getResources(api: GoogleServiceAPIs) {
 	const drive = api.drive;
 
@@ -67,6 +65,7 @@ async function getResources(api: GoogleServiceAPIs) {
 							}
 
 							resources.push({
+								thumbnailUrl: file.thumbnailLink ?? "",
 								extension: file.fileExtension,
 								category: category,
 								name: file.name,

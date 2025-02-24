@@ -22,6 +22,12 @@ async function generateResources(resources: Array<ResourceFile>) {
 			[
 				ts.factory.createPropertySignature(
 					undefined,
+					ts.factory.createIdentifier("thumbnailUrl"),
+					undefined,
+					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+				),
+				ts.factory.createPropertySignature(
+					undefined,
 					ts.factory.createIdentifier("extension"),
 					undefined,
 					ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
@@ -53,6 +59,8 @@ async function generateResources(resources: Array<ResourceFile>) {
 			],
 		),
 	);
+
+	statements.push();
 
 	statements.push(
 		ts.factory.createVariableStatement(
@@ -88,6 +96,10 @@ async function generateResources(resources: Array<ResourceFile>) {
 										ts.factory.createPropertyAssignment(
 											ts.factory.createIdentifier("extension"),
 											ts.factory.createStringLiteral(resource.extension),
+										),
+										ts.factory.createPropertyAssignment(
+											ts.factory.createIdentifier("thumbnailUrl"),
+											ts.factory.createStringLiteral(resource.thumbnailUrl),
 										),
 									],
 									true,
