@@ -48,10 +48,4 @@ export const resources: Resource[] = [{
         name: "Code Coogs x CSGirls - Introduction to Data Science Workshop (02.13.2025).pdf",
         category: "Workshops",
         extension: "pdf"
-    }, {
-        id: "1KDBoNVKfbEt3yRVpRp2s4ULNutJUlPzo",
-        link: "https://drive.google.com/file/d/1KDBoNVKfbEt3yRVpRp2s4ULNutJUlPzo/view?usp=drivesdk",
-        name: "Competition Workshop #1.pdf",
-        category: "Competitions",
-        extension: "pdf"
     }];
