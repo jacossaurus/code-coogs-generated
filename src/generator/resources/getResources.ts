@@ -45,7 +45,7 @@ async function getResources(api: GoogleServiceAPIs) {
 
 						if (files === undefined) {
 							console.log(
-								"The files list was empty for category (${category})",
+								`The files list was empty for category (${category})`,
 							);
 							return;
 						}
