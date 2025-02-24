@@ -49,6 +49,8 @@ async function main() {
 
 	writeFileSync(path.join(generatedDir, "resources.ts"), contents.resources);
 	writeFileSync(path.join(generatedDir, "officers.ts"), contents.officers);
+
+	console.log("Done!");
 }
 
 main();
