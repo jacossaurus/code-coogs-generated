@@ -15,7 +15,7 @@ async function generateOfficers(officers: Array<Officer>) {
 
 	statements.push(
 		ts.factory.createInterfaceDeclaration(
-			undefined,
+			ts.factory.createModifiersFromModifierFlags(ts.ModifierFlags.Export),
 			ts.factory.createIdentifier("Officer"),
 			undefined,
 			undefined,
@@ -62,7 +62,7 @@ async function generateOfficers(officers: Array<Officer>) {
 
 	statements.push(
 		ts.factory.createVariableStatement(
-			undefined,
+			ts.factory.createModifiersFromModifierFlags(ts.ModifierFlags.Export),
 			ts.factory.createVariableDeclarationList(
 				[
 					ts.factory.createVariableDeclaration(

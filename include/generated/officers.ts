@@ -1,5 +1,5 @@
 // THIS FILE WAS GENERATED AUTOMATICALLY AND SHOULD NOT BE EDITED BY HAND!
-interface Officer {
+export interface Officer {
     title: string;
     name: string;
     linkedIn: string;
@@ -7,7 +7,7 @@ interface Officer {
     semester: string;
     imageUrl: string;
 }
-const officers: Officer[] = [{
+export const officers: Officer[] = [{
         title: "President",
         name: "Tony Flores",
         linkedIn: "https://www.linkedin.com/in/tonyfloresf/",

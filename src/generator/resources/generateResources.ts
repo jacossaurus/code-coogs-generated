@@ -15,7 +15,7 @@ async function generateResources(resources: Array<ResourceFile>) {
 
 	statements.push(
 		ts.factory.createInterfaceDeclaration(
-			undefined,
+			ts.factory.createModifiersFromModifierFlags(ts.ModifierFlags.Export),
 			ts.factory.createIdentifier("Resource"),
 			undefined,
 			undefined,
@@ -56,7 +56,7 @@ async function generateResources(resources: Array<ResourceFile>) {
 
 	statements.push(
 		ts.factory.createVariableStatement(
-			undefined,
+			ts.factory.createModifiersFromModifierFlags(ts.ModifierFlags.Export),
 			ts.factory.createVariableDeclarationList(
 				[
 					ts.factory.createVariableDeclaration(

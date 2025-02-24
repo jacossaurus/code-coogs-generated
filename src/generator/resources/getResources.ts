@@ -28,19 +28,13 @@ async function getResources(api: GoogleServiceAPIs) {
 
 			console.log(`Found ${folders.length} folders`);
 
-			for (const folder of folders) {
-				if (!folder.name || !folder.id) {
-					continue;
-				}
-
-				const category = folder.name;
-
+			async function getResourcesInFolder(category: string, folderId: string) {
 				await drive.files
 					.list({
-						q: `'${folder.id}' in parents`,
-						fields: "files(id, name, webViewLink, fileExtension)",
+						q: `'${folderId}' in parents and trashed = false`,
+						fields: "files(id, name, webViewLink, fileExtension, mimeType)",
 					})
-					.then((filesResponse) => {
+					.then(async (filesResponse) => {
 						const files = filesResponse.data.files;
 
 						if (files === undefined) {
@@ -51,6 +45,14 @@ async function getResources(api: GoogleServiceAPIs) {
 						}
 
 						for (const file of files) {
+							if (
+								file.id &&
+								file.mimeType === "application/vnd.google-apps.folder"
+							) {
+								await getResourcesInFolder(category, file.id);
+								continue;
+							}
+
 							if (
 								!file.id ||
 								!file.name ||
@@ -73,6 +75,16 @@ async function getResources(api: GoogleServiceAPIs) {
 							});
 						}
 					});
+			}
+
+			for (const folder of folders) {
+				if (!folder.name || !folder.id) {
+					continue;
+				}
+
+				const category = folder.name;
+
+				getResourcesInFolder(category, folder.id);
 			}
 		});
 
