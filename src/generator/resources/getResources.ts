@@ -42,11 +42,15 @@ async function getResources(api: GoogleServiceAPIs) {
 							return;
 						}
 
+						console.log(`Found ${files.length} files!`);
+
 						for (const file of files) {
 							if (
 								file.id &&
 								file.mimeType === "application/vnd.google-apps.folder"
 							) {
+								console.log(`Found nested folder (${file.name})`);
+
 								await getResourcesInFolder(category, file.id);
 								continue;
 							}
@@ -57,6 +61,9 @@ async function getResources(api: GoogleServiceAPIs) {
 								!file.webViewLink ||
 								!file.fileExtension
 							) {
+								console.log(
+									`File was malformed. (TYPE = ${file.mimeType}, NAME = ${file.name})`,
+								);
 								continue;
 							}
 
@@ -83,7 +90,9 @@ async function getResources(api: GoogleServiceAPIs) {
 
 				const category = folder.name;
 
-				getResourcesInFolder(category, folder.id);
+				console.log(`Getting resources in category (${category})`);
+
+				await getResourcesInFolder(category, folder.id);
 			}
 		});
 
