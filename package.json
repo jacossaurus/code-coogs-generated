@@ -1,7 +1,7 @@
 {
 	"scripts": {
-		"build": "tsc && node out/index.js",
-		"lint": "biome lint",
+		"build": "tsc && node out/index.js && biome format include --write",
+		"format": "biome format .",
 		"prepare": "husky"
 	},
 	"dependencies": {
