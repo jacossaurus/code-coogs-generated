@@ -1,14 +1,23 @@
 {
 	"scripts": {
-		"build": "tsc && node out/index.js"
+		"build": "tsc && node out/index.js",
+		"format": "biome format . --write",
+		"prepare": "husky"
 	},
 	"dependencies": {
 		"dotenv": "^16.4.7",
 		"google-auth-library": "^9.15.1",
-		"googleapis": "^144.0.0",
-		"typescript": "^5.7.3"
+		"googleapis": "^146.0.0",
+		"typescript": "^5.8.2"
 	},
 	"devDependencies": {
-		"@types/node": "^22.13.5"
+		"@biomejs/biome": "1.9.4",
+		"@types/node": "^22.13.8",
+		"husky": "^9.1.7"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@biomejs/biome"
+		]
 	}
 }

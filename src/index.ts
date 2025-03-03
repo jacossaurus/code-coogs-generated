@@ -5,7 +5,7 @@ import getResources from "./generator/resources/getResources";
 import getOfficers from "./generator/officers/getOfficers";
 import generateResources from "./generator/resources/generateResources";
 import ts from "typescript";
-import { writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import generateOfficers from "./generator/officers/generateOfficers";
 
 dotenv.config();
@@ -46,6 +46,10 @@ async function main() {
 		resources: printer.printFile(generatedFiles.resources),
 		officers: printer.printFile(generatedFiles.officers),
 	};
+
+	if (!existsSync(generatedDir)) {
+		mkdirSync(generatedDir, { recursive: true });
+	}
 
 	writeFileSync(path.join(generatedDir, "resources.ts"), contents.resources);
 	writeFileSync(path.join(generatedDir, "officers.ts"), contents.officers);
